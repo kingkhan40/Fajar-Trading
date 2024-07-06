@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import { Link } from 'react-router-dom';
 import { FaArrowAltCircleLeft } from 'react-icons/fa';
 import { BallTriangle } from 'react-loader-spinner';
+import { toast } from 'react-toastify';
 
 function AddDriverReport() {
     const [driverName, setDriverName] = useState('');
@@ -61,7 +62,7 @@ function AddDriverReport() {
                 setFuel('');
                 setContainerNo('');
 
-                alert('Report submitted successfully!');
+                toast.success('Report submitted successfully!');
             } catch (error) {
                 console.error('Error submitting form:', error);
                 alert('Failed to submit report. Please try again.');
@@ -116,7 +117,15 @@ function AddDriverReport() {
                                 required
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             />
-                            <div className="absolute -top-4 font-semibold shadow-md bg-gray-50 rounded-xl right-0 mt-2 mr-3 text-gray-600">{currentDate}</div>
+                            <div className="absolute -top-4 font-semibold shadow-md bg-gray-50 rounded-xl right-0 mt-2 mr-3 text-gray-600">
+                                <input
+                                    type="date"
+                                    id="id"
+                                    name="name"
+                                    placeholder="placeholder"
+
+                                />
+                            </div>
                         </div>
 
                         <div className="mb-4">

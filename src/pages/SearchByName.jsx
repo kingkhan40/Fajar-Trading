@@ -2,6 +2,32 @@ import React, { useState } from 'react';
 import { FaChevronLeft, FaChevronRight, FaArrowLeft, FaSearch } from 'react-icons/fa';
 import Header from '../components/Header';
 import axios from 'axios';
+import { BallTriangle } from 'react-loader-spinner';
+
+const Loader = () => (
+    <div className="flex justify-center items-center">
+
+
+
+        <div className="flex items-center justify-center h-screen">
+            <h1 className="text-2xl font-bold text-gray-800">
+                <BallTriangle
+                    height={100}
+                    width={100}
+                    radius={5}
+                    color="#4fa949"
+                    ariaLabel="ball-triangle-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                    visible={true}
+                />
+            </h1>
+        </div>
+
+
+
+    </div>
+);
 
 const SearchByName = () => {
     const [filteredBills, setFilteredBills] = useState([]);
@@ -65,11 +91,15 @@ const SearchByName = () => {
     const handleSearchChange = (e) => {
         const term = e.target.value;
         setSearchTerm(term);
-        if (term) {
-            fetchFilteredBills(term);
-        } else {
+        if (!term) {
             setFilteredBills([]);
             setSearched(false);
+        }
+    };
+
+    const handleSearchClick = () => {
+        if (searchTerm) {
+            fetchFilteredBills(searchTerm);
         }
     };
 
@@ -88,7 +118,10 @@ const SearchByName = () => {
                                     value={searchTerm}
                                     onChange={handleSearchChange}
                                 />
-                                <div className="flex flex-row items-center justify-center px-4 rounded-full border text-base bg-black text-white font-medium tracking-wide border-transparent py-1 h-[38px] -mr-3">
+                                <div
+                                    className="flex flex-row items-center justify-center px-4 rounded-full border text-base bg-black text-white font-medium tracking-wide border-transparent py-1 h-[38px] -mr-3 cursor-pointer"
+                                    onClick={handleSearchClick}
+                                >
                                     <FaSearch />
                                 </div>
                             </div>
@@ -115,7 +148,9 @@ const SearchByName = () => {
                             </div>
                         </div>
                     </div>
-                    {(searched && filteredBills.length === 0 && !loading) ? (
+                    {loading ? (
+                        <Loader />
+                    ) : (searched && filteredBills.length === 0 && !loading) ? (
                         <div className="w-full flex items-center mx-auto justify-center mt-20">
                             <h2 className="text-xl font-bold text-gray-800">No Data Available</h2>
                         </div>

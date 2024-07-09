@@ -5,6 +5,7 @@ import { RiDeleteBin6Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { BallTriangle } from 'react-loader-spinner';
+import { toast } from 'react-toastify';
 
 const ViewDriverReport = () => {
     const [reports, setReports] = useState([]);
@@ -69,6 +70,7 @@ const ViewDriverReport = () => {
         try {
             await axios.delete(`https://import-export-iisi.vercel.app/driverReport/deleteDriver?bill_id=${id}`);
             setReports(reports.filter(report => report._id !== id));
+            toast.error("Deleted Successfully")
             console.log(`Report with id ${id} deleted successfully.`);
         } catch (error) {
             console.error('Error deleting report:', error);

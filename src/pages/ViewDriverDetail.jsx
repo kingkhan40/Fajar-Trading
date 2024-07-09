@@ -5,6 +5,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Header from "../components/Header";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
+import { BallTriangle } from "react-loader-spinner";
 
 const ViewDriverDetail = () => {
     const { id } = useParams();
@@ -38,7 +39,18 @@ const ViewDriverDetail = () => {
     }, [id]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="flex justify-center items-center h-screen">
+            <BallTriangle
+                height={100}
+                width={100}
+                radius={5}
+                color="#4fa94d"
+                ariaLabel="ball-triangle-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={true}
+            />
+        </div>;
     }
 
     if (error) {

@@ -1,25 +1,103 @@
-import React from 'react';
-import { FaArrowLeft, FaSearch } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaChevronLeft, FaChevronRight, FaArrowLeft, FaSearch } from 'react-icons/fa';
 import Header from '../components/Header';
+import axios from 'axios';
 
 const SearchByName = () => {
+    const [filteredBills, setFilteredBills] = useState([]);
+    const [perPage, setPerPage] = useState(20);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [searched, setSearched] = useState(false);
+
+    const totalPages = Math.ceil(filteredBills.length / perPage);
+    const indexOfLastBill = currentPage * perPage;
+    const indexOfFirstBill = indexOfLastBill - perPage;
+    const currentBills = filteredBills.slice(indexOfFirstBill, indexOfLastBill);
+
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const renderPageNumbers = () => {
+        const pageNumbers = [];
+        const maxPagesToShow = 4;
+
+        let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+        if (endPage - startPage + 1 < maxPagesToShow) {
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(
+                <button
+                    key={i}
+                    onClick={() => paginate(i)}
+                    className={`text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 ${currentPage === i ? 'bg-gray-400' : 'bg-gray-300'}`}
+                >
+                    {i}
+                </button>
+            );
+        }
+
+        return pageNumbers;
+    };
+
+    const fetchFilteredBills = async (term) => {
+        setLoading(true);
+        setSearched(true);
+        try {
+            const response = await axios.get(`https://import-export-iisi.vercel.app/bill/getAllBillsByCompanyName?page=1&limit=400&companyName=${term}`);
+            setTimeout(() => {
+                setFilteredBills(response.data.result);
+                setCurrentPage(1);
+                setLoading(false);
+            }, 2000); // Delay of 2 seconds
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setLoading(false);
+        }
+    };
+
+    const handleSearchChange = (e) => {
+        const term = e.target.value;
+        setSearchTerm(term);
+        if (term) {
+            fetchFilteredBills(term);
+        } else {
+            setFilteredBills([]);
+            setSearched(false);
+        }
+    };
+
     return (
         <>
             <Header title={"Bill By"} Icon={FaArrowLeft} />
             <div className="container mx-auto px-4 sm:px-8">
                 <div className="py-8">
                     <div className="flex flex-row justify-between items-center mx-6 flex-wrap">
-
-                    <div className="relative w-full md:w-80 mb-4 md:mb-0">
-                            <form className="mt-10 mx-auto max-w-xl py-2 px-6 rounded-full bg-gray-50 border flex focus-within:border-gray-300">
-                                <input type="text" placeholder="Search anything" className="bg-transparent w-full focus:outline-none pr-4 font-semibold border-0 focus:ring-0 px-0 py-0" name="topic" /><button className="flex flex-row items-center justify-center px-4 rounded-full border disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150 text-base bg-black text-white font-medium tracking-wide border-transparent py-1 h-[38px] -mr-3">
+                        <div className="relative w-full md:w-80 mb-4 md:mb-0">
+                            <div className="mt-10 mx-auto max-w-xl py-2 px-6 rounded-full bg-gray-50 border flex focus-within:border-gray-300">
+                                <input
+                                    type="text"
+                                    placeholder="Search anything"
+                                    className="bg-transparent w-full focus:outline-none pr-4 font-semibold border-0 focus:ring-0 px-0 py-0"
+                                    value={searchTerm}
+                                    onChange={handleSearchChange}
+                                />
+                                <div className="flex flex-row items-center justify-center px-4 rounded-full border text-base bg-black text-white font-medium tracking-wide border-transparent py-1 h-[38px] -mr-3">
                                     <FaSearch />
-                                </button>
-                            </form>
+                                </div>
+                            </div>
                         </div>
                         <div className="relative w-full md:w-auto flex justify-end max-sm:justify-end">
                             <select
-                                className="h-full  rounded-r border-t cursor-pointer sm:rounded-r-none sm:border-r-0 border-r border-b block appearance-none w-full md:w-auto bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
+                                className="h-full rounded-r border-t cursor-pointer sm:rounded-r-none sm:border-r-0 border-r border-b block appearance-none w-full md:w-auto bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
+                                value={perPage}
+                                onChange={(e) => setPerPage(Number(e.target.value))}
                             >
                                 <option value="20">20</option>
                                 <option value="40">40</option>
@@ -37,9 +115,74 @@ const SearchByName = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="w-full flex items-center mx-auto justify-center mt-20">
-                        <h2 className="text-xl font-bold text-gray-800">No Data Available</h2>
-                    </div>
+                    {(searched && filteredBills.length === 0 && !loading) ? (
+                        <div className="w-full flex items-center mx-auto justify-center mt-20">
+                            <h2 className="text-xl font-bold text-gray-800">No Data Available</h2>
+                        </div>
+                    ) : (
+                        <div className="mt-10">
+                            <table className="min-w-full leading-normal">
+                                <thead>
+                                    <tr>
+                                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            BL Number
+                                        </th>
+                                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Company
+                                        </th>
+                                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Invoice Number
+                                        </th>
+                                        <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            Quantity
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentBills.map((bill) => (
+                                        <tr key={bill._id}>
+                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                {bill.bl_no}
+                                            </td>
+                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                {bill.company}
+                                            </td>
+                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                {bill.invoice_number}
+                                            </td>
+                                            <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                {bill.fieldsData.length > 0 ? bill.fieldsData[0].Qty : 'N/A'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                    {filteredBills.length > 0 && (
+                        <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
+                            <span className="text-xs xs:text-sm text-gray-900">
+                                Showing {Math.min(indexOfFirstBill + 1, filteredBills.length)} to {Math.min(indexOfLastBill, filteredBills.length)} of {filteredBills.length} Entries
+                            </span>
+                            <div className="inline-flex mt-2 xs:mt-0">
+                                <button
+                                    onClick={() => paginate(currentPage === 1 ? 1 : currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className={`text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <FaChevronLeft />
+                                </button>
+                                {renderPageNumbers()}
+                                <button
+                                    onClick={() => paginate(currentPage === totalPages ? totalPages : currentPage + 1)}
+                                    disabled={currentPage === totalPages || filteredBills.length === 0}
+                                    className={`text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r ${currentPage === totalPages || filteredBills.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    <FaChevronRight />
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </>

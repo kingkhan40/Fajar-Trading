@@ -1,38 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { FaArrowLeft, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import Header from '../components/Header';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { FaArrowLeft, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import Header from "../components/Header";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { BallTriangle } from 'react-loader-spinner';
+import { BallTriangle } from "react-loader-spinner";
 
 const ViewAllTax = () => {
   const [bills, setBills] = useState([]);
   const [filteredBills, setFilteredBills] = useState([]);
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true); // Added loading state for initial fetch
-  const [downloading, setDownloading] = useState(false); // Added downloading state for PDF download
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://import-export-iisi.vercel.app/bill/getAllBills?page=1&limit=700");
-        setBills(response.data.result);
-        setFilteredBills(response.data.result);
+        const response = await axios.get(
+          "https://import-export-iisi.vercel.app/bill/getAllBills?page=1&limit=700"
+        );
+        const filteredData = response.data.result.filter(
+          (bill) => bill.vatNo && bill.vatNo.trim() !== ""
+        );
+        setBills(filteredData);
+        setFilteredBills(filteredData);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       } finally {
-        setLoading(false); // Set loading to false after fetching data
+        setLoading(false);
       }
     };
 
     setTimeout(() => {
       fetchData();
-    }, 2000); // Simulate 2 seconds delay
-
+    }, 2000);
   }, []);
 
   const totalPages = Math.ceil(filteredBills.length / perPage);
@@ -60,7 +64,9 @@ const ViewAllTax = () => {
         <button
           key={i}
           onClick={() => paginate(i)}
-          className={`text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 ${currentPage === i ? 'bg-gray-400' : 'bg-gray-300'}`}
+          className={`text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 ${
+            currentPage === i ? "bg-gray-400" : "bg-gray-300"
+          }`}
         >
           {i}
         </button>
@@ -75,10 +81,10 @@ const ViewAllTax = () => {
     setSearchTerm(value);
     const filteredData = bills.filter((bill) => {
       return (
-        bill.bl_no.toLowerCase().includes(value) ||
-        (bill.fieldsData.length > 0 && bill.fieldsData[0].Qty.toString().includes(value)) ||
+        bill.date.toLowerCase().includes(value) ||
         bill.company.toLowerCase().includes(value) ||
-        bill.invoice_number.toLowerCase().includes(value)
+        bill.invoice_number.toLowerCase().includes(value) ||
+        bill.vatNo.toLowerCase().includes(value)
       );
     });
     setFilteredBills(filteredData);
@@ -86,7 +92,7 @@ const ViewAllTax = () => {
   };
 
   const downloadPDF = () => {
-    setDownloading(true); // Start downloading state
+    setDownloading(true);
     setTimeout(() => {
       const input = document.getElementById("ViewAllTax");
       html2canvas(input).then((canvas) => {
@@ -97,9 +103,9 @@ const ViewAllTax = () => {
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
         pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
         pdf.save(`bill_${bills.invoice_number}.pdf`);
-        setDownloading(false); // End downloading state
+        setDownloading(false);
       });
-    }, 2000); // Simulate 2 seconds delay before download
+    }, 2000);
   };
 
   return (
@@ -107,7 +113,7 @@ const ViewAllTax = () => {
       <Header title={" View All Tax"} Icon={FaArrowLeft} />
       {loading ? (
         <div className="flex justify-center items-center h-screen">
-          <div >
+          <div>
             <BallTriangle
               height={100}
               width={100}
@@ -116,13 +122,13 @@ const ViewAllTax = () => {
               ariaLabel="ball-triangle-loading"
               wrapperStyle={{}}
               wrapperClass=""
-              visible={true} />
-
+              visible={true}
+            />
           </div>
         </div>
       ) : (
         <div className="container mx-auto px-4 sm:px-8">
-          <div className="py-8" id='ViewAllTax'>
+          <div className="py-8" id="ViewAllTax">
             <div className="flex flex-col md:flex-row justify-end items-center mx-6">
               <div className="relative w-full md:w-auto my-2">
                 <select
@@ -151,7 +157,11 @@ const ViewAllTax = () => {
             </div>
             <div className="-mx-4 sm:-mx-8 px-2 sm:px-8 py-4 overflow-x-auto bg-white rounded-md">
               <div className="flex flex-col sm:flex-row items-center justify-between">
-                <img src="/images/top.png" alt="View All" className="w-full h-full inline-block" />
+                <img
+                  src="/images/top.png"
+                  alt="View All"
+                  className="w-full h-full inline-block"
+                />
               </div>
               <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
                 <table className="min-w-full leading-normal">
@@ -181,36 +191,68 @@ const ViewAllTax = () => {
                     {currentBills.map((bill) => (
                       <tr key={bill._id}>
                         <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">
-                          <Link to={`/view/${bill._id}`} className="text-blue-500 hover:underline">
-                            {bill.bl_no}
+                          <Link
+                            to={`/viewtax/${bill._id}`}
+                            className="text-blue-500 hover:underline"
+                          >
+                            {bill.date}
                           </Link>
                         </td>
-                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">{bill.company}</td>
-                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">{bill.invoice_number}</td>
-                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">{bill.fieldsData.length > 0 ? bill.fieldsData[0].Qty : '-'}</td>
-                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">{bill.date}</td>
-                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">{bill.totalAmount}</td>
+                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">
+                          {bill.vatNo}
+                        </td>
+                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">
+                          {bill.invoice_number}
+                        </td>
+                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">
+                          {bill.company}
+                        </td>
+                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">
+                          {bill.date}
+                        </td>
+                        <td className="px-5 py-5 border border-gray-400 bg-white text-base font-bold">
+                          {bill.paidAmount}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
                 <div className="px-5 py-5 bg-white border-t flex flex-col drop-shadow xs:flex-row items-center xs:justify-between">
                   <span className="text-xs xs:text-sm text-gray-900">
-                    Showing {Math.min(indexOfFirstBill + 1, filteredBills.length)} to {Math.min(indexOfLastBill, filteredBills.length)} of {filteredBills.length} Entries
+                    Showing{" "}
+                    {Math.min(indexOfFirstBill + 1, filteredBills.length)} to{" "}
+                    {Math.min(indexOfLastBill, filteredBills.length)} of{" "}
+                    {filteredBills.length} Entries
                   </span>
                   <div className="inline-flex mt-2 xs:mt-0">
                     <button
-                      onClick={() => paginate(currentPage === 1 ? 1 : currentPage - 1)}
+                      onClick={() =>
+                        paginate(currentPage === 1 ? 1 : currentPage - 1)
+                      }
                       disabled={currentPage === 1}
-                      className={`text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l ${
+                        currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
                       <FaChevronLeft />
                     </button>
                     {renderPageNumbers()}
                     <button
-                      onClick={() => paginate(currentPage === totalPages ? totalPages : currentPage + 1)}
-                      disabled={currentPage === totalPages || filteredBills.length === 0}
-                      className={`text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r ${currentPage === totalPages || filteredBills.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() =>
+                        paginate(
+                          currentPage === totalPages
+                            ? totalPages
+                            : currentPage + 1
+                        )
+                      }
+                      disabled={
+                        currentPage === totalPages || filteredBills.length === 0
+                      }
+                      className={`text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r ${
+                        currentPage === totalPages || filteredBills.length === 0
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                     >
                       <FaChevronRight />
                     </button>
@@ -219,7 +261,10 @@ const ViewAllTax = () => {
               </div>
             </div>
             <div className="px-5 py-5 mb-4 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
-              <div className="bg-white items-center justify-between w-full md:w-80 flex rounded-full shadow-lg p-2 mb-5 sticky" style={{ top: 5 }}>
+              <div
+                className="bg-white items-center justify-between w-full md:w-80 flex rounded-full shadow-lg p-2 mb-5 sticky"
+                style={{ top: 5 }}
+              >
                 <input
                   value={searchTerm}
                   onChange={handleSearch}
@@ -246,12 +291,28 @@ const ViewAllTax = () => {
                 <button
                   onClick={downloadPDF}
                   disabled={downloading} // Disable button when downloading
-                  className={`px-4 py-3 bg-blue-400 rounded-md text-white outline-none focus:ring-4 shadow-lg transform active:scale-x-75 transition-transform mx-5 flex ${downloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`px-4 py-3 bg-blue-400 rounded-md text-white outline-none focus:ring-4 shadow-lg transform active:scale-x-75 transition-transform mx-5 flex ${
+                    downloading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
                   {downloading ? (
-                    <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.001 8.001 0 0112 4.472v3.497L6.472 17.29zm11.445-11.445a8.003 8.003 0 011.273 10.528l-4.71-4.71 3.437-3.437z"></path>
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.001 8.001 0 0112 4.472v3.497L6.472 17.29zm11.445-11.445a8.003 8.003 0 011.273 10.528l-4.71-4.71 3.437-3.437z"
+                      ></path>
                     </svg>
                   ) : (
                     <svg
@@ -268,7 +329,9 @@ const ViewAllTax = () => {
                       />
                     </svg>
                   )}
-                  <span className="ml-2">{downloading ? 'Downloading...' : 'Download In PDF'}</span>
+                  <span className="ml-2">
+                    {downloading ? "Downloading..." : "Download In PDF"}
+                  </span>
                 </button>
               </div>
             </div>

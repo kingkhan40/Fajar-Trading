@@ -14,6 +14,7 @@ import ViewAllTax from "./pages/ViewAllTax";
 import SearchByCompany from "./pages/SearchByName";
 import VatTaxNum from "./pages/VatTaxNum";
 import PayByInvoice from "./pages/PayByInvoice";
+import ViewAllTaxDetail from "./pages/ViewAllTaxDetail";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/viewdrvreport" element={<ViewDriverReport />} />
         <Route path="/viewdrvreport/:id" element={<ViewDriverDetail />} />
         <Route path="/viewalltax" element={<ViewAllTax />} />
+        <Route path="/viewtax/:id" element={<ViewAllTaxDetail />} />
         <Route path="/searchbyname" element={<SearchByCompany />} />
         <Route path="/vattaxnum" element={<VatTaxNum />} />
         <Route path="/paybyinvoice" element={<PayByInvoice />} />

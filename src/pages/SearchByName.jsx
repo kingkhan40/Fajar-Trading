@@ -76,7 +76,7 @@ const SearchByName = () => {
         setLoading(true);
         setSearched(true);
         try {
-            const response = await axios.get(`https://import-export-iisi.vercel.app/bill/getAllBillsByCompanyName?page=1&limit=400&companyName=${term}`);
+            const response = await axios.get(`https://fajrmuttrahtrading.com/bill/getAllBillsByCompanyName?page=1&limit=400&companyName=${term}`);
             setTimeout(() => {
                 setFilteredBills(response.data.result);
                 setCurrentPage(1);

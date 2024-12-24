@@ -18,7 +18,7 @@ const ViewDriverReport = () => {
         const fetchData = async () => {
             try {
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                const response = await axios.get('https://import-export-iisi.vercel.app/driverReport/getAllDriverReports?page=1&limit=100');
+                const response = await axios.get('https://fajrmuttrahtrading.com/driverReport/getAllDriverReports?page=1&limit=100');
                 setReports(response.data.result);
                 setLoading(false);
             } catch (error) {
@@ -68,7 +68,7 @@ const ViewDriverReport = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`https://import-export-iisi.vercel.app/driverReport/deleteDriver?bill_id=${id}`);
+            await axios.delete(`https://fajrmuttrahtrading.com/driverReport/deleteDriver?bill_id=${id}`);
             setReports(reports.filter(report => report._id !== id));
             toast.error("Deleted Successfully")
             console.log(`Report with id ${id} deleted successfully.`);

@@ -17,7 +17,7 @@ const BillDetail = () => {
     const fetchBill = async () => {
       try {
         const response = await axios.get(
-          "https://import-export-iisi.vercel.app/bill/getAllBills?page=1&limit=700"
+          "https://fajrmuttrahtrading.com/bill/getAllBills?page=1&limit=700"
         );
         const bills = response.data.result;
         const foundBill = bills.find((bill) => bill._id === id);

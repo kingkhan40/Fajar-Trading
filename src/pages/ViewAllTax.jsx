@@ -20,7 +20,7 @@ const ViewAllTax = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://import-export-iisi.vercel.app/bill/getAllBills?page=1&limit=700"
+          "https://fajrmuttrahtrading.com/bill/getAllBills?page=1&limit=700"
         );
         const filteredData = response.data.result.filter(
           (bill) => bill.vatNo && bill.vatNo.trim() !== ""

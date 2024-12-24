@@ -130,7 +130,7 @@ const AddBill = () => {
         };
 
         try {
-            const response = await axios.post('https://import-export-iisi.vercel.app/bill/create-bill', ApiData);
+            const response = await axios.post('https://fajrmuttrahtrading.com/bill/create-bill', ApiData);
             console.log('Data saved successfully:', response.data);
 
             // Reset bill data after successful submission

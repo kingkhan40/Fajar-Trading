@@ -52,7 +52,7 @@ function AddDriverReport() {
             };
 
             try {
-                const response = await axios.post('https://fajrmuttrahtrading.com/driverReport/addDriverReport', formData);
+                const response = await axios.post('https://web.fajrmuttrahtrading.com/driverReport/addDriverReport', formData);
                 console.log('Form submitted:', response.data);
 
                 setDriverName('');

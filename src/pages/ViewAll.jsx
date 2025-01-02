@@ -18,7 +18,7 @@ const ViewAll = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("https://fajrmuttrahtrading.com/bill/getAllBills?page=1&limit=700");
+        const response = await axios.get("https://web.fajrmuttrahtrading.com/bill/getAllBills?page=1&limit=700");
         setTimeout(() => {
           setBills(response.data.result);
           setFilteredBills(response.data.result);

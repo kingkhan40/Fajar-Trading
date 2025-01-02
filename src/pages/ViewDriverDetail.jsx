@@ -18,7 +18,7 @@ const ViewDriverDetail = () => {
         const fetchDriverDetail = async () => {
             try {
                 const response = await axios.get(
-                    `https://fajrmuttrahtrading.com/driverReport/getAllDriverReports?page=1&limit=100`
+                    `https://web.fajrmuttrahtrading.com/driverReport/getAllDriverReports?page=1&limit=100`
                 );
                 const bills = response.data.result;
                 const foundBill = bills.find((bill) => bill._id === id);

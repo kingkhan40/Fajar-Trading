@@ -17,7 +17,7 @@ const BillDetail = () => {
     const fetchBill = async () => {
       try {
         const response = await axios.get(
-          "https://fajrmuttrahtrading.com/bill/getAllBills?page=1&limit=700"
+          "https://web.fajrmuttrahtrading.com/bill/getAllBills?page=1&limit=700"
         );
         const bills = response.data.result;
         const foundBill = bills.find((bill) => bill._id === id);
@@ -104,7 +104,6 @@ const BillDetail = () => {
               <strong>Date:</strong> {bill.date}
             </h2>
           </div>
-
           <div className="max-w-3xl my-5 bg-gray-200 border border-gray-500 rounded-lg overflow-hidden shadow-xl">
             <h2 className="text-xl font-semibold bg-blue-300 p-4 text-center rounded-t-lg">
               Bill To :
@@ -136,114 +135,124 @@ const BillDetail = () => {
           <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-hidden overflow-x-auto">
             <div className="min-w-full overflow-x-auto">
               {bill.fieldsData.length > 0 ? (
-                <table className="min-w-full leading-normal">
-                  <thead className="bg-blue-300">
-                    <tr>
-                      <th className="px-5 py-3 border border-gray-500 text-left text-base font-bold text-gray-800 uppercase tracking-wider">
+                <table className="min-w-full leading-normal border-collapse border border-gray-700">
+                  <thead>
+                    <tr className="bg-blue-100 border border-gray-700">
+                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
                         Container No
                       </th>
-                      <th className="px-5 py-3 border border-gray-500 text-left text-base font-bold text-gray-800 uppercase tracking-wider">
+                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
                         Location
                       </th>
-                      <th className="px-5 py-3 border border-gray-500 text-left text-base font-bold text-gray-800 uppercase tracking-wider">
-                        Customer Name
-                      </th>
-                      <th className="px-5 py-3 border border-gray-500 text-left text-base font-bold text-gray-800 uppercase tracking-wider">
+                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
                         Price
                       </th>
-                      <th className="px-5 py-3 border border-gray-500 text-left text-base font-bold text-gray-800 uppercase tracking-wider">
-                        Quantity
+                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
+                        Qty
                       </th>
-                      <th className="px-5 py-3 border border-gray-500 text-left text-base font-bold text-gray-800 uppercase tracking-wider">
+                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
                         Total
+                      </th>
+                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
+                        VAT (OMR)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {bill.fieldsData.map((field, index) => (
-                      <tr key={index}>
-                        <td className="px-5 py-5 border border-gray-500 bg-white text-base font-bold">
+                      <tr
+                        key={index}
+                        className={`${
+                          index % 2 === 0 ? "bg-white" : "bg-gray-100"
+                        } border border-gray-700`}
+                      >
+                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
                           {field.container_no}
                         </td>
-                        <td className="px-5 py-5 border border-gray-500 bg-white text-base font-bold">
+                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
                           {field.location}
                         </td>
-                        <td className="px-5 py-5 border border-gray-500 bg-white text-base font-bold">
-                          {field.customer_name}
-                        </td>
-                        <td className="px-5 py-5 border border-gray-500 bg-white text-base font-bold">
+                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
                           {field.price}
                         </td>
-                        <td className="px-5 py-5 border border-gray-500 bg-white text-base font-bold">
+                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
                           {field.Qty}
                         </td>
-                        <td className="px-5 py-5 border border-gray-500 bg-white text-base font-bold">
-                          {field.price * field.Qty}
+                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
+                          {(field.price * field.Qty).toFixed(2)}
+                        </td>
+                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
+                          {(
+                            (field.price * field.Qty * bill.vatPercentage) /
+                            100
+                          ).toFixed(2)}
                         </td>
                       </tr>
                     ))}
+
+                    {/* Extra Charges Section */}
+                    <tr className="bg-blue-100 border border-gray-700">
+                      <td
+                        colSpan="4"
+                        className="px-5 py-3 text-left font-bold border border-gray-700"
+                      >
+                        Extra Charge:
+                      </td>
+                      <td className="px-5 py-3 border border-gray-700 text-center font-medium">
+                        {totalExtraCharges.toFixed(2)}
+                      </td>
+                      <td className="px-5 py-3 border border-gray-700 text-center font-medium">
+                        {(
+                          (totalExtraCharges * bill.vatPercentage) /
+                          100
+                        ).toFixed(2)}
+                      </td>
+                    </tr>
                   </tbody>
+
+                  {/* Total Amount Section */}
+                  <tfoot>
+                    <tr className="bg-blue-100 border border-gray-700">
+                      <td
+                        colSpan="5"
+                        className="px-5 py-3 text-left font-bold text-xl border border-gray-700"
+                      >
+                        Total Amount:
+                      </td>
+                      <td className="px-5 py-3 border border-gray-700 text-center font-bold text-xl">
+                        {totalAmountIncludingVATAndCharges.toFixed(2)}
+                      </td>
+                    </tr>
+                    <tr className="bg-white">
+                      <td
+                        colSpan="6"
+                        className="px-5 py-3 text-left font-medium uppercase text-base border-t border-gray-700"
+                      >
+                        Total Amount in Words:{" "}
+                        <span className="font-bold">
+                          {numberToWords(
+                            Math.round(totalAmountIncludingVATAndCharges)
+                          )}
+                        </span>
+                      </td>
+                    </tr>
+                  </tfoot>
                 </table>
               ) : (
                 <p className="text-center">No fields data available</p>
               )}
             </div>
-            <div className="border-b-2 p-1 py-2 bg-white px-4">
-              <h3 className="text-2xl font-bold border-b-2 p-1 py-2">
-                Extra Charges :
-              </h3>
-              {bill.extraChargeData.length > 0 ? (
-                <ul>
-                  {bill.extraChargeData.map((charge, index) => (
-                    <li key={index} className=" p-1 text-base font-medium">
-                      <div className="flex justify-between border-b-2 p-1 py-2">
-                        <b className="text-blue-700 font-bold text-base">
-                          Extra Description : &nbsp;
-                        </b>{" "}
-                        <span className="text-xl font-bold">
-                          {" "}
-                          {charge.notes}
-                        </span>
-                      </div>
-                      <div className="flex justify-between border-b-2 p-1 py-2">
-                        <b className="text-blue-700 font-bold text-base">
-                          Extra Price : &nbsp;
-                        </b>
-                        <span>{charge.price}</span>
-                      </div>
-                      <div className="flex justify-between p-1 py-2">
-                        <b className="text-blue-700 font-bold text-base">
-                          Extra Quantity : &nbsp;
-                        </b>
-                        <span className="">{charge.Qty}</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="flex justify-end mb-2 pt-2 text-base font-medium">
-                  No extra charges
-                </p>
-              )}
-            </div>
-
-            <p className="flex items-center justify-between border-b-2 p-1 py-2 bg-white px-4">
-              <strong className="text-base font-bold">VAT Tax :</strong> {bill.vatPercentage}%
-            </p>
-
-            <p className="flex items-center justify-between border-b-2 p-1 py-2 bg-white px-4">
-              <strong className="text-base font-bold">Paid Amount:</strong> {bill.paidAmount}
-            </p>
-
-            <p className="flex items-center justify-between border-b-2 p-1 py-2 bg-white px-4">
-              <strong className="text-base font-bold">Extra Charge Description:</strong>{" "}
-              {bill.extraChargeDescription || "N/A"}
-            </p>
-            <p className="flex items-center justify-between border-b-2 p-1 py-2 bg-white px-4">
-              <strong className="text-base font-bold">Total Amount:</strong>{" "}
-              {totalAmountIncludingVATAndCharges.toFixed(2) || "N/A"}
-            </p>
           </div>
+
+          <p className="flex items-center justify-between border-b-2 p-1 py-2 bg-white px-4">
+            <strong className="text-base font-bold">VAT Tax:</strong>{" "}
+            {bill.vatPercentage}%
+          </p>
+
+          <p className="flex items-center justify-between border-b-2 p-1 py-2 bg-white px-4">
+            <strong className="text-base font-bold">Total Amount:</strong>{" "}
+            {totalAmountIncludingVATAndCharges.toFixed(2) || "N/A"}
+          </p>
 
           <div className="flex flex-wrap items-center justify-between p-1 py-2">
             <p>
@@ -255,12 +264,25 @@ const BillDetail = () => {
             <button
               onClick={downloadPDF}
               disabled={downloading} // Disable button when downloading
-              className={`px-4 py-3 bg-blue-400 rounded-md text-white outline-none focus:ring-4 shadow-lg transform active:scale-x-75 transition-transform mx-5 flex ${downloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-4 py-3 bg-blue-400 rounded-md text-white outline-none focus:ring-4 shadow-lg transform active:scale-x-75 transition-transform mx-5 flex ${
+                downloading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               {downloading ? (
                 <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.001 8.001 0 0112 4.472v3.497L6.472 17.29zm11.445-11.445a8.003 8.003 0 011.273 10.528l-4.71-4.71 3.437-3.437z"></path>
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.001 8.001 0 0112 4.472v3.497L6.472 17.29zm11.445-11.445a8.003 8.003 0 011.273 10.528l-4.71-4.71 3.437-3.437z"
+                  ></path>
                 </svg>
               ) : (
                 <svg
@@ -277,7 +299,9 @@ const BillDetail = () => {
                   />
                 </svg>
               )}
-              <span className="ml-2">{downloading ? 'Downloading...' : 'Download In PDF'}</span>
+              <span className="ml-2">
+                {downloading ? "Downloading..." : "Download In PDF"}
+              </span>
             </button>
           </div>
         </div>

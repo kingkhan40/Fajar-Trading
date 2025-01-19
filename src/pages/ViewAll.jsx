@@ -86,9 +86,9 @@ const ViewAll = () => {
   return (
     <>
       <Header title={" All Bill"} Icon={FaArrowLeft} />
-      <div className="container mx-auto px-4 sm:px-8">
+      <div className="container mx-auto px-4 md:px-8">
         <div className="py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center mx-6">
+          <div className="flex flex-col md:flex-row justify-between items-center md:mx-6 mx-2">
             <div className="bg-white items-center justify-between w-full md:w-80 flex rounded-full shadow-lg p-2 mb-5 sticky" style={{ top: 5 }}>
               <input
                 value={searchTerm}

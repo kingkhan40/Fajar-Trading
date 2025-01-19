@@ -21,10 +21,10 @@ const AddBill = () => {
     Qty: "",
   });
   const [thirdModalFormData, setThirdModalFormData] = useState({
-    descrption: "",
+    extraCharge: "",
     price: "",
-    qty: "",
-    vatTax: "",
+    Qty: "",
+    vat: "",
   });
 
   const [billData, setBillData] = useState({
@@ -43,6 +43,7 @@ const AddBill = () => {
     fieldsData: [],
     date: new Date().toISOString().slice(0, 10),
     totalAmount: 0,
+    description: "",
   });
 
   const openModal = () => setIsModalOpen(true);
@@ -312,6 +313,23 @@ const AddBill = () => {
                   placeholder="VAT Tax"
                   name="vatPercentage"
                   value={billData.vatPercentage}
+                  onChange={handleBillDataChange}
+                />
+              </div>
+              <div className="mb-6 mt-6">
+                <label
+                  className="block text-gray-700 text-sm font-semibold mb-2"
+                  htmlFor="vat-tax"
+                >
+                  Description :
+                </label>
+                <input
+                  className="text-sm bg-gray-200 appearance-none rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline h-10"
+                  id="vat-tax"
+                  // type="number"
+                  placeholder="Description"
+                  name="description"
+                  value={billData.description}
                   onChange={handleBillDataChange}
                 />
               </div>

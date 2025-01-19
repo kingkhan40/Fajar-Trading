@@ -78,6 +78,7 @@ const BillDetail = () => {
     (acc, charge) => acc + charge.price * charge.Qty,
     0
   );
+  console.log(bill.extraChargeData, "hello sir");
 
   // Calculate the total amount including VAT and extra charges
   const totalAmountIncludingVATAndCharges =
@@ -91,11 +92,11 @@ const BillDetail = () => {
   return (
     <div id="billDetail">
       <Header title={" Bill Detail"} />
-      <div className="container mx-auto h-auto items-center justify-center px-10 bg-white py-10 max-sm:px-2">
+      <div className="container mx-auto h-auto items-center justify-center px-10 bg-white py-10 px-2">
         <Link to="/view">
           <FaArrowAltCircleLeft size={28} />
         </Link>
-        <div className="py-8 max-sm:px-2">
+        <div className="py-8 px-2">
           <div className="flex flex-col sm:flex-row items-center justify-between">
             <h2 className="text-2xl font-semibold my-2 border bg-white py-2 px-4 sm:rounded-lg">
               Invoice : {bill.invoice_number}
@@ -132,117 +133,148 @@ const BillDetail = () => {
           <h3 className="text-xl font-semibold my-2 text-center">
             Bill No : {bill.bl_no}
           </h3>
-          <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-hidden overflow-x-auto">
-            <div className="min-w-full overflow-x-auto">
-              {bill.fieldsData.length > 0 ? (
-                <table className="min-w-full leading-normal border-collapse border border-gray-700">
-                  <thead>
-                    <tr className="bg-blue-100 border border-gray-700">
-                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
-                        Container No
-                      </th>
-                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
-                        Location
-                      </th>
-                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
-                        Price
-                      </th>
-                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
-                        Qty
-                      </th>
-                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
-                        Total
-                      </th>
-                      <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
-                        VAT (OMR)
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {bill.fieldsData.map((field, index) => (
-                      <tr
-                        key={index}
-                        className={`${
-                          index % 2 === 0 ? "bg-white" : "bg-gray-100"
-                        } border border-gray-700`}
-                      >
-                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
-                          {field.container_no}
-                        </td>
-                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
-                          {field.location}
-                        </td>
-                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
-                          {field.price}
-                        </td>
-                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
-                          {field.Qty}
-                        </td>
-                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
-                          {(field.price * field.Qty).toFixed(2)}
-                        </td>
-                        <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
-                          {(
-                            (field.price * field.Qty * bill.vatPercentage) /
-                            100
-                          ).toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
+          <div className="px-4 sm:px-8 py-4 overflow-hidden overflow-x-auto">
+  <div className="min-w-full overflow-x-auto">
+    {bill.fieldsData.length > 0 ? (
+      <table className="min-w-full leading-normal border border-gray-700">
+        {/* Table Header */}
+        <thead>
+          <tr className="bg-blue-100 border border-gray-700">
+            <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
+              Container No
+            </th>
+            <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
+              Customer Name
+            </th>
+            <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
+              Location
+            </th>
+            <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
+              Price
+            </th>
+            <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
+              Qty
+            </th>
+            <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
+              VAT (OMR)
+            </th>
+            <th className="px-5 py-3 border border-gray-700 text-center text-base font-bold text-gray-800 uppercase">
+              Total
+            </th>
+          </tr>
+        </thead>
 
-                    {/* Extra Charges Section */}
-                    <tr className="bg-blue-100 border border-gray-700">
-                      <td
-                        colSpan="4"
-                        className="px-5 py-3 text-left font-bold border border-gray-700"
-                      >
-                        Extra Charge:
-                      </td>
-                      <td className="px-5 py-3 border border-gray-700 text-center font-medium">
-                        {totalExtraCharges.toFixed(2)}
-                      </td>
-                      <td className="px-5 py-3 border border-gray-700 text-center font-medium">
-                        {(
-                          (totalExtraCharges * bill.vatPercentage) /
-                          100
-                        ).toFixed(2)}
-                      </td>
-                    </tr>
-                  </tbody>
+        {/* Table Body */}
+        <tbody>
+          {bill.fieldsData.map((field, index) => (
+            <tr
+              key={index}
+              className={`${
+                index % 2 === 0 ? "bg-white" : "bg-gray-100"
+              } border border-gray-700`}
+            >
+              <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
+                {field.container_no}
+              </td>
+              <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
+                {field.customer_name}
+              </td>
+              <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
+                {field.location}
+              </td>
+              <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
+                {field.price}
+              </td>
+              <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
+                {field.Qty}
+              </td>
+              <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
+                {((field.price * field.Qty * bill.vatPercentage) / 100).toFixed(
+                  2
+                )}
+              </td>
+              <td className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800">
+                {(field.price * field.Qty).toFixed(2)}
+              </td>
+            </tr>
+          ))}
 
-                  {/* Total Amount Section */}
-                  <tfoot>
-                    <tr className="bg-blue-100 border border-gray-700">
-                      <td
-                        colSpan="5"
-                        className="px-5 py-3 text-left font-bold text-xl border border-gray-700"
-                      >
-                        Total Amount:
-                      </td>
-                      <td className="px-5 py-3 border border-gray-700 text-center font-bold text-xl">
-                        {totalAmountIncludingVATAndCharges.toFixed(2)}
-                      </td>
-                    </tr>
-                    <tr className="bg-white">
-                      <td
-                        colSpan="6"
-                        className="px-5 py-3 text-left font-medium uppercase text-base border-t border-gray-700"
-                      >
-                        Total Amount in Words:{" "}
-                        <span className="font-bold">
-                          {numberToWords(
-                            Math.round(totalAmountIncludingVATAndCharges)
-                          )}
-                        </span>
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              ) : (
-                <p className="text-center">No fields data available</p>
-              )}
-            </div>
-          </div>
+          {/* Extra Charges Section */}
+          {bill.extraChargeData.length > 0 && (
+            <>
+              <tr className="bg-blue-100 border border-gray-700">
+                <td
+                  colSpan="3"
+                  className="px-5 py-3 text-left font-bold border border-gray-700"
+                >
+                  Extra Charge : <span className="ml-4"> {bill.extraChargeDescription || "No description provided"} </span> 
+                </td>
+                <td
+                  className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800"
+                >
+                  {bill.extraChargeData[0].price}
+                </td>
+                <td
+                  className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800"
+                >
+                  {bill.extraChargeData[0].Qty}
+                </td>
+                <td
+                  className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800"
+                >
+                  {(
+                    (bill.extraChargeData[0].price *
+                      bill.extraChargeData[0].Qty *
+                      bill.vatPercentage) /
+                    100
+                  ).toFixed(2)}
+                </td>
+                <td
+                  className="px-5 py-3 border border-gray-700 text-center font-medium text-gray-800"
+                >
+                  {(
+                    bill.extraChargeData[0].price *
+                    bill.extraChargeData[0].Qty
+                  ).toFixed(2)}
+                </td>
+              </tr>
+            </>
+          )}
+        </tbody>
+
+        {/* Table Footer */}
+        <tfoot>
+          <tr className="bg-blue-100 border border-gray-700">
+            <td
+              colSpan="6"
+              className="px-5 py-3 text-left font-bold text-xl border border-gray-700"
+            >
+              Total Amount:
+            </td>
+            <td className="px-5 py-3 border border-gray-700 text-center font-bold text-xl">
+              {totalAmountIncludingVATAndCharges.toFixed(2)}
+            </td>
+          </tr>
+          <tr className="bg-white">
+            <td
+              colSpan="7"
+              className="px-5 py-3 text-left font-medium uppercase text-base border-t border-gray-700"
+            >
+              Total Amount in Words:{" "}
+              <span className="font-bold">
+                {numberToWords(
+                  Math.round(totalAmountIncludingVATAndCharges)
+                )}
+              </span>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    ) : (
+      <p className="text-center">No fields data available</p>
+    )}
+  </div>
+</div>
 
           <p className="flex items-center justify-between border-b-2 p-1 py-2 bg-white px-4">
             <strong className="text-base font-bold">VAT Tax:</strong>{" "}
